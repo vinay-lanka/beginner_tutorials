@@ -19,9 +19,9 @@ $ git clone git@github.com:vinay-lanka/beginner_tutorials.git
 #Go back to the ws directory
 $ cd ~/ros_ws
 # Install rosdep dependencies before building the package
-rosdep install -i --from-path src --rosdistro humble -y
+$ rosdep install -i --from-path src --rosdistro humble -y
 # Build the package using colcon build
-colcon build --packages-select beginner_tutorials
+$ colcon build --packages-select beginner_tutorials
 # After successfull build source the package
 $ source ./install/setup.bash
 
@@ -29,6 +29,28 @@ $ source ./install/setup.bash
 ros2 run beginner_tutorials talker
 # Run the subscriber in terminal#2 (Split the terminal and source ROS2 and the workspace setup.bash)
 ros2 run beginner_tutorials listener 
+```
+
+### Service - Change String
+There's a service in the talker node to change the default string that get's published, to call it
+```bash
+$ ros2 service call /change_string beginner_tutorials/srv/ChangeStr "{new_string: New String}"
+```
+
+### Launch Files
+```bash
+$ source /opt/ros/humble/setup.bash
+$ cd ~/ros_ws
+$ source ./install/setup.bash
+# Run the publisher in terminal
+$ ros2 launch beginner_tutorials talkernode.launch.py publish_freq:=1200
+```
+
+### Buidling Doxygen Documentation
+```bash
+$ cd ~/ros_ws
+#Run the colcon build on the doxygen docs cmake target
+$ colcon build --packages-select beginner_tutorials --cmake-target docs
 ```
 
 ### Check style guidelines
