@@ -5,7 +5,24 @@
  * @version 0.1
  * @date 2023-11-14
  *
- * @copyright Copyright (c) 2023
+ * @copyright Copyright (c) 2023 Vinay Lanka
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
  *
  */
 
@@ -59,6 +76,15 @@ class PublisherandServiceNode : public rclcpp::Node {
    *
    */
   void timer_callback() {
+    if (this->get_parameter("publish_frequency").as_int() < 100) {
+      RCLCPP_ERROR_STREAM_THROTTLE(
+          this->get_logger(), *this->get_clock(), 100,
+          "Publishing too fast, change publish_frequency parameter");
+    } else if (this->get_parameter("publish_frequency").as_int() > 1000) {
+      RCLCPP_FATAL_STREAM(
+          this->get_logger(),
+          "Too slow, FATAL, have to change publish_frequency parameter");
+    }
     auto message = this->message;
     RCLCPP_INFO_STREAM(this->get_logger(), "Publishing:" << message.data);
     publisher_->publish(message);
@@ -66,8 +92,9 @@ class PublisherandServiceNode : public rclcpp::Node {
   /**
    * @brief Change string callback from the service, changes the string being
    * published
-   *
-   * @param resp Response echoes the input string
+   * 
+   * @param request Input string that changes the published string
+   * @param resp The same string is echoed back when the string is set successfully
    */
   void change_str(
       const std::shared_ptr<beginner_tutorials::srv::ChangeStr::Request>
