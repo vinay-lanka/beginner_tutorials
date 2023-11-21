@@ -14,6 +14,9 @@ execute_process(COMMAND cmake -E create_symlink
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 find_package(Doxygen)
@@ -55,7 +58,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   DEPENDENCIES std_msgs
 )
 add_executable(talker src/publisher_member_function.cpp)
-ament_target_dependencies(talker rclcpp std_msgs)
+ament_target_dependencies(talker rclcpp std_msgs geometry_msgs tf2 tf2_ros)
 
 add_executable(listener src/subscriber_member_function.cpp)
 ament_target_dependencies(listener rclcpp std_msgs)
@@ -78,14 +81,23 @@ install(DIRECTORY launch
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
   set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
   set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_flake8_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
+  set(ament_cmake_lint_cmake_FOUND TRUE)
+  set(ament_cmake_xmllint_FOUND TRUE)
+
+  find_package(ament_cmake_gtest REQUIRED)
+
+  ament_add_gtest(${PROJECT_NAME}_tutorial_test test/beginner_tutorial_test.cpp)
   ament_lint_auto_find_test_dependencies()
+  ament_target_dependencies(${PROJECT_NAME}_tutorial_test rclcpp)
+  ament_export_dependencies(rosidl_default_runtime)
+
+  rosidl_get_typesupport_target(cpp_typesupport_target
+    ${PROJECT_NAME} rosidl_typesupport_cpp)
+  target_link_libraries(${PROJECT_NAME}_tutorial_test "${cpp_typesupport_target}")
 endif()
 
 ament_package()

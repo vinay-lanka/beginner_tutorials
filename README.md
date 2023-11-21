@@ -43,7 +43,70 @@ $ source /opt/ros/humble/setup.bash
 $ cd ~/ros_ws
 $ source ./install/setup.bash
 # Run the publisher in terminal
-$ ros2 launch beginner_tutorials talkernode.launch.py publish_freq:=1200
+$ ros2 launch beginner_tutorials talkernode.launch.py publish_freq:=1200 ros2_bag_start:=False
+```
+
+### TF Frames
+
+The talker node in this package now publishes a static tf transform between 2 frames, `world` and `talk` as a arbitrary transform. To run the publisher, run
+```bash
+$ source /opt/ros/humble/setup.bash
+$ cd ~/ros_ws
+$ source ./install/setup.bash
+# Run the publisher in terminal
+$ ros2 run beginner_tutorials talker
+```
+To view the tf transform, run the following commands in a separate terminal
+```bash
+ # In a new terminal window, echo the topic that broadcasts the static frame:
+$ ros2 topic echo /tf_static
+# In a new terminal window, get more information about the frames
+$ ros2 run tf2_tools view_frames
+```
+
+### Testing
+To run the unit tests and verify their working, run the commands below.
+```bash
+$ source /opt/ros/humble/setup.bash
+$ cd ~/ros_ws
+# Build the package:
+$  colcon build --packages-select beginners_tutorials
+# Install the package:
+$  source install/setup.bash
+# Run the unit tests:
+$ colcon test --packages-select beginners_tutorials
+# View the results pf the tests:
+$ cat log/latest_test/beginners_tutorials/stdout_stderr.log
+```
+
+### ROS2 Bag Functionality
+This package supports recording and playback of ros2 bags. The launch file has been modified to support ros2 bag recording. To record use the `ros2_bag_start` parameter (True/False).
+
+```bash
+$ source /opt/ros/humble/setup.bash
+$ cd ~/ros_ws
+$ source ./install/setup.bash
+# Run the launch file in terminal with the ros2_bag_start parameter as true
+$ ros2 launch beginner_tutorials talkernode.launch.py ros2_bag_start:=True
+```
+The above ros2 bag is called `talkerbag` and can be found in the workspace directory where the command was run.
+To inspect and playback the ros2 bag.
+```bash
+$ source /opt/ros/humble/setup.bash
+$ cd ~/ros_ws
+$ source ./install/setup.bash
+# Inspect the ros2 bag
+$  ros2 bag info talkerbag
+# Play back the contents of the ros2 bag
+$  ros2 bag play talkerbag
+```
+To check the working, in a seperate terminal run
+```bash
+$ source /opt/ros/humble/setup.bash
+$ cd ~/ros_ws
+$ source ./install/setup.bash
+# Run the listener in terminal
+$ ros2 run beginner_tutorials listener
 ```
 
 ### Buidling Doxygen Documentation
